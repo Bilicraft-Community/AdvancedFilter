@@ -70,6 +70,7 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
     }
 
     private void reportToAdmins(CommandSender sender, String text){
+        getLogger().warning(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
         Bukkit.getOnlinePlayers().forEach(player->{
             if(player.hasPermission("advancedfilter.admin") || player.isOp()){
                 sender.sendMessage(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
@@ -97,7 +98,11 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
                         return new FilterResult(true,true,original);
                     case REPLACE:
                         this.reportToAdmins(sender,original);
-                        return new FilterResult(true,false, ignoreCaseReplace(original, keyword, fillStar(keyword.length())));
+                        if(group.getExtra().isEmpty()) {
+                            return new FilterResult(true, false, ignoreCaseReplace(original, keyword, fillStar(keyword.length())));
+                        }else{
+                            return new FilterResult(true, false, ignoreCaseReplace(original, keyword, group.getExtra()));
+                        }
                     case COMMAND:
                         this.reportToAdmins(sender,original);
                         Bukkit.getScheduler().runTask(this,()-> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), group.getExtra().replace("{group}",group.getName())
