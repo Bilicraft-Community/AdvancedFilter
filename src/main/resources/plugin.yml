@@ -1,0 +1,4 @@
+name: AdvancedFilter
+version: ${project.version}
+main: com.mcsunnyside.advancedfilter.AdvancedFilter
+api-version: 1.15

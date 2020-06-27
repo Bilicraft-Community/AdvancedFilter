@@ -1,0 +1,17 @@
+keywords: #大小写不敏感
+  stupideast:
+    words:
+      - virus
+      - ncov
+    punish: command
+    extra: ban {player} Fuckyou
+  wow:
+    words:
+      - 傻逼
+    punish: block
+    extra: null
+  nmsl:
+    words:
+      - nmsl
+    punish: replace
+    extra: wmsl
