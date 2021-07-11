@@ -15,13 +15,15 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>GitHub Bilicraft-Community Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/Bilicraft-Community/${pom.artifactId}</url>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
+        <snapshotRepository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <build>
