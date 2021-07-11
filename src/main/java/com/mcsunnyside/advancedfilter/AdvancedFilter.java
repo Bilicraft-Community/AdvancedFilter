@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,6 +33,15 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
             keywords.add(group);
         });
         keywords.forEach(group -> getLogger().info("已加载："+group.toString()));
+    }
+
+    private boolean playerNameHit(String str){
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if(onlinePlayer.getName().contains(str)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -70,6 +80,9 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
     }
 
     private void reportToAdmins(CommandSender sender, String text){
+        if(sender == null){
+            return;
+        }
         getLogger().warning(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
         Bukkit.getOnlinePlayers().forEach(player->{
             if(player.hasPermission("advancedfilter.admin") || player.isOp()){
@@ -89,6 +102,10 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
             String text = ChatColor.stripColor(original).toLowerCase();
             for (String keyword : group.getKeywords()){
                 if(!text.toLowerCase().contains(keyword)){
+                    continue;
+                }
+                if(playerNameHit(keyword)){
+                    // 可能是提及玩家
                     continue;
                 }
                 //检测到了
