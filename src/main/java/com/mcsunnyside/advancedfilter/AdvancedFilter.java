@@ -32,7 +32,6 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
             KeywordGroup group = new KeywordGroup(key,column.getStringList("words"),PunishmentWay.fromId(column.getString("punish")),column.getString("extra"));
             keywords.add(group);
         });
-        keywords.forEach(group -> getLogger().info("已加载："+group.toString()));
     }
 
     private boolean playerNameHit(String str){
