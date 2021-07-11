@@ -85,7 +85,7 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
         getLogger().warning(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
         Bukkit.getOnlinePlayers().forEach(player->{
             if(player.hasPermission("advancedfilter.admin") || player.isOp()){
-                sender.sendMessage(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
+                player.sendMessage(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
             }
         });
     }
