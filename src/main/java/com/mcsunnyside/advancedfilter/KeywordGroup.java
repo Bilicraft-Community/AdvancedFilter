@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @AllArgsConstructor
 @Data
 @Builder
 public class KeywordGroup {
     private String name;
-    private Set<String> keywords;
+    private List<String> keywords;
     private PunishmentWay punishmentWay;
     private String extra;
 }

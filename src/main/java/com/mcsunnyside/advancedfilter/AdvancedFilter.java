@@ -30,7 +30,8 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
         ConfigurationSection keywordSection = getConfig().getConfigurationSection("keywords");
         keywordSection.getKeys(false).forEach(key->{
             ConfigurationSection column = keywordSection.getConfigurationSection(key);
-            KeywordGroup group = new KeywordGroup(key,new HashSet<>(column.getStringList("words")),PunishmentWay.fromId(column.getString("punish")),column.getString("extra"));
+            //                                        用HashSet进行去重
+            KeywordGroup group = new KeywordGroup(key,new ArrayList<>(new HashSet<>(column.getStringList("words"))),PunishmentWay.fromId(column.getString("punish")),column.getString("extra"));
             keywords.add(group);
         });
     }
