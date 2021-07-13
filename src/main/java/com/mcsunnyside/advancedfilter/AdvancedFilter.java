@@ -13,6 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
         ConfigurationSection keywordSection = getConfig().getConfigurationSection("keywords");
         keywordSection.getKeys(false).forEach(key->{
             ConfigurationSection column = keywordSection.getConfigurationSection(key);
-            KeywordGroup group = new KeywordGroup(key,column.getStringList("words"),PunishmentWay.fromId(column.getString("punish")),column.getString("extra"));
+            KeywordGroup group = new KeywordGroup(key,new HashSet<>(column.getStringList("words")),PunishmentWay.fromId(column.getString("punish")),column.getString("extra"));
             keywords.add(group);
         });
     }
@@ -49,7 +50,7 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
         keywords.clear();
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void playerChat(AsyncPlayerChatEvent event){
         FilterResult result = check(event.getPlayer(),event.getMessage());
         if(!result.isHit()){
@@ -62,7 +63,7 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
         event.setMessage(result.getNewString());
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void playerSign(SignChangeEvent event){
         for (int i = 0; i < event.getLines().length; i++) {
             String line = event.getLine(i);
@@ -78,14 +79,14 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
         }
     }
 
-    private void reportToAdmins(CommandSender sender, String text){
+    private void reportToAdmins(CommandSender sender, String text, String keyword){
         if(sender == null){
             return;
         }
-        getLogger().warning(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
+        getLogger().warning(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text+"，击中关键字："+keyword);
         Bukkit.getOnlinePlayers().forEach(player->{
             if(player.hasPermission("advancedfilter.admin") || player.isOp()){
-                player.sendMessage(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text);
+                player.sendMessage(ChatColor.RED+"玩家 "+sender.getName()+" 发送了包含关键词的信息： "+text+"，击中关键字："+keyword);
             }
         });
     }
@@ -110,17 +111,17 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
                 //检测到了
                 switch (group.getPunishmentWay()){
                     case BLOCK:
-                        this.reportToAdmins(sender,original);
+                        this.reportToAdmins(sender,original,keyword);
                         return new FilterResult(true,true,original);
                     case REPLACE:
-                        this.reportToAdmins(sender,original);
+                        this.reportToAdmins(sender,original,keyword);
                         if(group.getExtra().isEmpty()) {
                             return new FilterResult(true, false, ignoreCaseReplace(original, keyword, fillStar(keyword.length())));
                         }else{
                             return new FilterResult(true, false, ignoreCaseReplace(original, keyword, group.getExtra()));
                         }
                     case COMMAND:
-                        this.reportToAdmins(sender,original);
+                        this.reportToAdmins(sender,original,keyword);
                         Bukkit.getScheduler().runTask(this,()-> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), group.getExtra().replace("{group}",group.getName())
                                 .replace("{name}",sender.getName())
                                 .replace("{player}",sender.getName())
@@ -128,7 +129,7 @@ public final class AdvancedFilter extends JavaPlugin implements Listener {
                                 .replace("{keyword}",keyword)));
                         return new FilterResult(true,true,original);
                     case SILENT:
-                        this.reportToAdmins(sender,original);
+                        this.reportToAdmins(sender,original,keyword);
                         return new FilterResult(true,false,original);
                 }
             }
